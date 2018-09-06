@@ -76,7 +76,6 @@ void bhmLine (int x_one, int y_one, int x_two, int y_two, int color)
 						i += 1;
 						d_p += temp1;
 					}
-
 					else
 						d_p += temp2;
 
@@ -140,6 +139,7 @@ void wait_for_char ()
 	}
 }
 
+// main module
 int main ()
 {
 	// initialise the graphics system

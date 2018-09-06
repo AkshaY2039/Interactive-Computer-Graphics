@@ -86,6 +86,7 @@ void wait_for_char ()
 	}
 }
 
+// main module
 int main ()
 {
 	int gd = DETECT, gm;
