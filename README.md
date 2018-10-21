@@ -13,7 +13,7 @@
 	```
 	Input - alpha, length, (x, y)
 	```
-2.	Koch Curve Snow Flake
+2.	Koch Curve - Snow Flake
 
 ##	Assignment 4 : Animation and Drawing
 1.	Image using in-built commands
