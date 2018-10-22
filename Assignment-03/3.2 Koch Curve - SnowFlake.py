@@ -23,8 +23,8 @@ blue = (0, 0, 255) # blue color
 
 # select some properties for display
 screenSize = scrWidth, scrHeight = 1024, 720
-originX = scrWidth / 2
-originY = scrHeight / 2
+originX = int (scrWidth / 2)
+originY = int (scrHeight / 2)
 length = 150
 
 # Koch Snoflake Curve Fucntion
@@ -98,4 +98,3 @@ if __name__ == '__main__' :
 		for event in pygame.event.get () :
 			if event.type == pygame.QUIT :
 				sys.exit ()
-

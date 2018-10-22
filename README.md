@@ -51,4 +51,7 @@
 	*	gcc pgm.c -lgraph
 	*	[Install OpenGl on Linux Mint](https://www.wikihow.com/Install-Mesa-(OpenGL)-on-Linux-Mint "Install OpenGl on Linux Mint")
 	*	[How to add “graphics.h” C/C++ library to gcc compiler in Linux](https://www.geeksforgeeks.org/add-graphics-h-c-library-gcc-compiler-linux/ "How to add “graphics.h” C/C++ library to gcc compiler in Linux")
-*	
+*	With Python programs
+	*	[PyGame](https://www.pygame.org/docs/)
+*	With WebGL
+	*	[Learning WebGL](https://github.com/gpjt/webgl-lessons)

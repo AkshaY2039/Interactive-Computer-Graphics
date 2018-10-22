@@ -20,19 +20,13 @@ light_blue = (12, 50, 200) # light blue color
 
 # select some properties for display
 screenSize = scrWidth, scrHeight = 1024, 720
-originX = scrWidth / 2
-originY = scrHeight / 2
-
-# initialize the display box (window)
-display_box = pygame.display.set_mode (screenSize) # set size of screen
-display_box.fill (backGroundColor) # set background color of the screen
-pygame.display.update ()
+originX = int (scrWidth / 2)
+originY = int (scrHeight / 2)
 
 # class stick figure
 class stickFigure :
-	penColor = light_blue
-	lineWeight = 2
-	rHead = 20
+	lineWeight = 5
+	rHead = 40
 	rPalm = int (rHead / 5)
 	rFeet = int (rHead / 4)
 	neckHeight = 10
@@ -48,9 +42,11 @@ class stickFigure :
 	angleKnee = -30
 	legGap = rFeet * 2
 
-	def __init__ (self, headX, headY) :
+	# constructor
+	def __init__ (self, headX, headY, color) :
 		self.headX = headX
 		self.headY = headY
+		self.penColor = color
 
 	# updating of Position
 	def updatePosition (self, headX, headY) :
@@ -74,15 +70,15 @@ class stickFigure :
 		self.shoulderRightX = self.neckX + self.shoulderLength
 		self.shoulderY = self.neckY
 		# elbow
-		self.elbowLeftX = self.shoulderLeftX + int (self.upperArmLength * (math.cos (math.radians (180 - self.angleShoulder))))
-		self.elbowLeftY = self.shoulderY + int (self.upperArmLength * (math.sin (math.radians (180 - self.angleShoulder))))
+		self.elbowLeftX = self.shoulderLeftX - int (self.upperArmLength * (math.cos (math.radians (self.angleShoulder))))
+		self.elbowLeftY = self.shoulderY + int (self.upperArmLength * (math.sin (math.radians (self.angleShoulder))))
 		self.elbowRightX = self.shoulderRightX + int (self.upperArmLength * (math.cos (math.radians (self.angleShoulder))))
 		self.elbowRightY = self.shoulderY + int (self.upperArmLength * (math.sin (math.radians (self.angleShoulder))))
 		# palm
-		self.palmLeftX = self.elbowLeftX + int (self.foreArmLength * (math.cos (math.radians (90 - self.angleElbow))))
-		self.palmLeftY = self.elbowLeftY + int (self.foreArmLength * (math.sin (math.radians (90 - self.angleElbow))))
-		self.palmRightX = self.elbowRightX + int (self.foreArmLength * (math.cos (math.radians (270 - self.angleElbow))))
-		self.palmRightY = self.elbowRightY + int (self.foreArmLength * (math.sin (math.radians (270 - self.angleElbow))))
+		self.palmLeftX = self.elbowLeftX - int (self.foreArmLength * (math.cos (math.radians (self.angleElbow))))
+		self.palmLeftY = self.elbowLeftY - int (self.foreArmLength * (math.sin (math.radians (self.angleElbow))))
+		self.palmRightX = self.elbowRightX + int (self.foreArmLength * (math.cos (math.radians (self.angleElbow))))
+		self.palmRightY = self.elbowRightY - int (self.foreArmLength * (math.sin (math.radians (self.angleElbow))))
 		# pelvic
 		self.pelvicLeftX = self.shoulderLeftX
 		self.pelvicRightX = self.shoulderRightX
@@ -91,21 +87,18 @@ class stickFigure :
 		self.pelvicJointLeftX = self.neckX - self.legGap
 		self.pelvicJointRightX = self.neckX + self.legGap
 		# knee
-		self.kneeLeftX = self.pelvicJointLeftX + int (self.thighLength * (math.cos (math.radians (self.anglePelvic))))
+		self.kneeLeftX = self.pelvicJointLeftX - int (self.thighLength * (math.cos (math.radians (self.anglePelvic))))
 		self.kneeLeftY = self.pelvicY + int (self.thighLength * (math.sin (math.radians (self.anglePelvic))))
-		self.kneeRightX = self.pelvicJointRightX + int (self.thighLength * (math.cos (math.radians (180 + self.anglePelvic))))
-		self.kneeRightY = self.pelvicY + int (self.thighLength * (math.sin (math.radians (180 + self.anglePelvic))))
+		self.kneeRightX = self.pelvicJointRightX + int (self.thighLength * (math.cos (math.radians (self.anglePelvic))))
+		self.kneeRightY = self.pelvicY + int (self.thighLength * (math.sin (math.radians (self.anglePelvic))))
 		# feet
-		self.feetLeftX = self.kneeLeftX + int (self.calfLength * (math.cos (math.radians (90 + self.angleKnee))))
-		self.feetLeftY = self.kneeLeftY + int (self.calfLength * (math.sin (math.radians (90 + self.angleKnee))))
-		self.feetRightX = self.kneeRightX + int (self.calfLength * (math.cos (math.radians (270 + self.angleKnee))))
-		self.feetRightY = self.kneeRightY + int (self.calfLength * (math.sin (math.radians (270 + self.angleKnee))))
+		self.feetLeftX = self.kneeLeftX + int (self.calfLength * (math.cos (math.radians (self.angleKnee))))
+		self.feetLeftY = self.kneeLeftY + int (self.calfLength * (math.sin (math.radians (self.angleKnee))))
+		self.feetRightX = self.kneeRightX - int (self.calfLength * (math.cos (math.radians (self.angleKnee))))
+		self.feetRightY = self.kneeRightY + int (self.calfLength * (math.sin (math.radians (self.angleKnee))))
 
 	# draw stick figure using coordinates
 	def draw (self) :
-		# clear screen
-		display_box.fill (backGroundColor)
-		pygame.display.update ()
 		# findCoordinates new values
 		self.findCoordinates ()
 		# head
@@ -149,66 +142,71 @@ class stickFigure :
 		# feet
 		pygame.draw.circle (display_box, self.penColor, (self.feetLeftX, self.feetLeftY), self.rFeet)
 		pygame.draw.circle (display_box, self.penColor, (self.feetRightX, self.feetRightY), self.rFeet)
-		# update display
-		pygame.display.update ()
 
 if __name__ == '__main__' :
-	skeleton = stickFigure (int (originX / 2), int (originY / 2))
+	numIter = int (input ('Enter the number of times animation to repeat : ').strip ())
 
-	# do the hands
-	for i in range (30, 60) :
-		pygame.time.wait (delay)
-		skeleton.updateAngles (-i, i, i, -i)
-		skeleton.draw ()
-	for i in range (60, 30, -1) :
-		pygame.time.wait (delay)
-		skeleton.updateAngles (-i, i, i, -i)
-		skeleton.draw ()
-	for i, j in zip (range (30, 0, -1), range (30, 60)) :
-		pygame.time.wait (delay)
-		skeleton.updateAngles (-i, j, i, -j)
-		skeleton.draw ()
-		
-	# 300, 70
-	for j in range (1) :
-		for i in range (300, 250, -1) :
-			pygame.time.wait (delay)
-			skeleton.updatePosition (i, 100)
-			skeleton.draw ()
-		for i in range (250, 350) :
-			pygame.time.wait (delay)
-			skeleton.updatePosition (i, 100)
-			skeleton.draw ()
-		for i in range (350, 250, -1) :
-			pygame.time.wait (delay)
-			skeleton.updatePosition (i, 100)
-			skeleton.draw ()
+	# initialize the display box (window)
+	display_box = pygame.display.set_mode (screenSize) # set size of screen
+	display_box.fill (backGroundColor) # set background color of the screen
+	pygame.display.update ()
 
-	# jump
-	for j in range (1) :
-		for i in range (100, 70, -1) :
-			pygame.time.wait (delay)
-			skeleton.updatePosition (250, i)
-			skeleton.draw ()
-		for i in range (70, 100) :
-			pygame.time.wait (delay)
-			skeleton.updatePosition (250, i)
-			skeleton.draw ()
+	skeleton1 = stickFigure (int (originX / 2), int (originY / 1.5), red)
+	skeleton2 = stickFigure (int (originX / 2) + originX, int (originY / 1.5), blue)
 
-	# do the hands again
-	for i in range (30, 60) :
-		pygame.time.wait (delay)
-		skeleton.updateAngles (-i, i, i, -i)
-		skeleton.draw ()
-	for i in range (60, 30, -1) :
-		pygame.time.wait (delay)
-		skeleton.updateAngles (-i, i, i, -i)
-		skeleton.draw ()
-	for i, j in zip (range (30, 0, -1), range (30, 60)) :
-		pygame.time.wait (delay)
-		skeleton.updateAngles (-i, j, i, -j,)
-		skeleton.draw ()
+	# animation loop
+	for i in range (0, numIter) :
+		# animation sub loop1
+		for angle11, angle12, angle21, angle22 in zip (range (80, 60, -1), range (30, 60), range (10, 60), range (110, 60, -1)) :
+			# clear screen
+			pygame.time.wait (delay)
+			display_box.fill (backGroundColor)
+			pygame.display.update ()
+			skeleton1.updateAngles (angle11, angle12, angle11, angle12)
+			skeleton2.updateAngles (angle21, angle22, angle21, angle22)
+			skeleton1.draw ()
+			skeleton2.draw ()
+			# update display
+			pygame.display.update ()
 
+		# animation sub loop2
+		for angle11, angle12, angle21, angle22 in zip (range (60, 10, -1), range (60, 110), range (60, 80), range (60, 30, -1)) :
+			# clear screen
+			pygame.time.wait (delay)
+			display_box.fill (backGroundColor)
+			pygame.display.update ()
+			skeleton1.updateAngles (angle11, angle12, angle11, angle12)
+			skeleton2.updateAngles (angle21, angle22, angle21, angle22)
+			skeleton1.draw ()
+			skeleton2.draw ()
+			# update display
+			pygame.display.update ()
+
+		# animation reverse sub loop2
+		for angle11, angle12, angle21, angle22 in zip (range (10, 60), range (100, 60, -1), range (80, 60, -1), range (30, 60)) :
+			# clear screen
+			pygame.time.wait (delay)
+			display_box.fill (backGroundColor)
+			pygame.display.update ()
+			skeleton1.updateAngles (angle11, angle12, angle11, angle12)
+			skeleton2.updateAngles (angle21, angle22, angle21, angle22)
+			skeleton1.draw ()
+			skeleton2.draw ()
+			# update display
+			pygame.display.update ()
+
+		# animation reverse sub loop1
+		for angle11, angle12, angle21, angle22 in zip (range (60, 80), range (60, 30, -1), range (60, 10, -1), range (60, 110)) :
+			# clear screen
+			pygame.time.wait (delay)
+			display_box.fill (backGroundColor)
+			pygame.display.update ()
+			skeleton1.updateAngles (angle11, angle12, angle11, angle12)
+			skeleton2.updateAngles (angle21, angle22, angle21, angle22)
+			skeleton1.draw ()
+			skeleton2.draw ()
+			# update display
+			pygame.display.update ()
 
 	while 1 :
 		for event in pygame.event.get() :
