@@ -45,6 +45,13 @@
 2.	Design a nice coloured Saree with good design supposed by textures and shades and Fractal Graphics.
 3.	Rotating three dimensional cube with each face has an image. Here Six faces will have six images in total. This is like a six face dice in which each face is past with a printed image/photo. When dice rolled, the images do roll.
 
+##	Assignment 8 ; WebGL Animation Assignment
+1.	Develop a WebGL project which display (either interactive or non-interactive) an Animation or Video Movie, either cartoon or with any other objects with
+	```
+	a. It need to display at least for 3 minutes
+	b. Minimum 1,000 lines of executable code.
+	```
+
 ####	_Help_
 *	With C/C++ programs
 	*	g++ pgm.cpp -lglut -lGL -lGLEW -lGLU
