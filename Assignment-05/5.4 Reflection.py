@@ -48,7 +48,7 @@ if __name__ == '__main__' :
 			temp = int (input ('X coordinate : ').strip ())
 			vertexX.append (temp % originX + originX)
 			temp = int (input ('Y coordinate : ').strip ())
-			vertexY.append (temp % originY + originY)
+			vertexY.append (originY - temp % originY)
 
 		# initialize the display box (window)
 		display_box = pygame.display.set_mode (screenSize) # set size of screen
