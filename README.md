@@ -28,7 +28,7 @@
 	```
 
 ##	Assignment 5 : Affine Transformations
-1.	Transition
+1.	Translation
 2.	Scaling
 3.	Rotation
 4.	Mirror Reflection
