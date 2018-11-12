@@ -6,6 +6,7 @@
 import pygame # importing pygame module for graphics and sound libraries
 import sys # importing sys module for system-specific functions
 import math # importing math module for sine and cosine functions
+import random # importing random module to generate random numbers
 
 # defining delay in terms of milliseconds
 delay = 20
@@ -22,6 +23,8 @@ light_blue = (12, 50, 200) # light blue color
 sky = (217, 235, 237) # sky color
 cream = (250, 210, 188) # cream color
 brick = (188, 60, 33) # brick color
+silver_board = (146, 145, 144) # silver board color
+grass = (36, 109, 20) # grass color
 
 # select some properties for display
 screenSize = scrWidth, scrHeight = 1200, 680
@@ -29,23 +32,43 @@ screenSize = scrWidth, scrHeight = 1200, 680
 # draw gate function
 def drawGate () :
 	# Center Pillar
-	pygame.draw.polygon (display_box, brick, [(573, 200), (617, 200), (617, 460), (573, 460)])
-	pygame.draw.polygon (display_box, black, [(573, 200), (617, 200), (617, 460), (573, 460)], 1)
+	pygame.draw.polygon (display_box, brick, [(560, 200), (630, 200), (630, 460), (560, 460)])
+	pygame.draw.polygon (display_box, black, [(560, 200), (630, 200), (630, 460), (560, 460)], 1)
 	# White Board Center Pillar
-	pygame.draw.polygon (display_box, white, [(575, 230), (575, 250), (615, 250), (615, 230)])
-	pygame.draw.polygon (display_box, black, [(575, 230), (575, 250), (615, 250), (615, 230)], 1)
+	pygame.draw.polygon (display_box, white, [(561, 230), (561, 260), (629, 260), (629, 230)])
+	pygame.draw.polygon (display_box, black, [(561, 230), (561, 260), (629, 260), (629, 230)], 1)
 	# Side Pillars - Left
-	pygame.draw.polygon (display_box, white, [(280, 200), (280, 460), (320, 460), (320, 200)])
-	pygame.draw.polygon (display_box, black, [(280, 200), (280, 460), (320, 460), (320, 200)], 1)
+	pygame.draw.polygon (display_box, white, [(240, 200), (240, 460), (320, 460), (320, 200)])
+	pygame.draw.polygon (display_box, black, [(240, 200), (240, 460), (320, 460), (320, 200)], 1)
 	# Side Pillars - Right
-	pygame.draw.polygon (display_box, white, [(870, 200), (870, 460), (910, 460), (910, 200)])
-	pygame.draw.polygon (display_box, black, [(870, 200), (870, 460), (910, 460), (910, 200)], 1)
+	pygame.draw.polygon (display_box, white, [(870, 200), (870, 460), (950, 460), (950, 200)])
+	pygame.draw.polygon (display_box, black, [(870, 200), (870, 460), (950, 460), (950, 200)], 1)
+	# Side Walls - Left
+	pygame.draw.polygon (display_box, white, [(160, 200), (160, 460), (180, 460), (180, 200)])
+	pygame.draw.polygon (display_box, black, [(160, 200), (160, 460), (180, 460), (180, 200)], 1)
+	# Side Walls - Right
+	pygame.draw.polygon (display_box, white, [(1010, 200), (1010, 460), (1030, 460), (1030, 200)])
+	pygame.draw.polygon (display_box, black, [(1010, 200), (1010, 460), (1030, 460), (1030, 200)], 1)
 	# Security Room - Left
 	pygame.draw.polygon (display_box, white, [(170, 320), (170, 460), (320, 460), (320, 320)])
 	pygame.draw.polygon (display_box, black, [(170, 320), (170, 460), (320, 460), (320, 320)], 1)
 	# Security Room - Right
 	pygame.draw.polygon (display_box, white, [(870, 320), (870, 460), (1020, 460), (1020, 320)])
 	pygame.draw.polygon (display_box, black, [(870, 320), (870, 460), (1020, 460), (1020, 320)], 1)
+	# Grill Gates - Left
+	pygame.draw.polygon (display_box, silver_board, [(322, 322), (438, 322), (438, 458), (322, 458)], 3)
+	for i in range (332, 438, 10) :
+		pygame.draw.line (display_box, silver_board, (i, 322), (i, 458), 3)
+	pygame.draw.polygon (display_box, silver_board, [(442, 322), (558, 322), (558, 458), (442, 458)], 3)
+	for i in range (452, 558, 10) :
+		pygame.draw.line (display_box, silver_board, (i, 322), (i, 458), 3)
+	# Grill Gates - Right
+	pygame.draw.polygon (display_box, silver_board, [(632, 322), (748, 322), (748, 458), (632, 458)], 3)
+	for i in range (642, 748, 10) :
+		pygame.draw.line (display_box, silver_board, (i, 322), (i, 458), 3)
+	pygame.draw.polygon (display_box, silver_board, [(752, 322), (868, 322), (868, 458), (752, 458)], 3)
+	for i in range (762, 868, 10) :
+		pygame.draw.line (display_box, silver_board, (i, 322), (i, 458), 3)
 	# Brick Wall - Left
 	pygame.draw.polygon (display_box, brick, [(170, 320), (170, 460), (120, 460), (120, 320)])
 	pygame.draw.polygon (display_box, black, [(170, 320), (170, 460), (120, 460), (120, 320)], 1)
@@ -53,11 +76,32 @@ def drawGate () :
 	pygame.draw.polygon (display_box, brick, [(1080, 320), (1080, 460), (1020, 460), (1020, 320)])
 	pygame.draw.polygon (display_box, black, [(1080, 320), (1080, 460), (1020, 460), (1020, 320)], 1)
 	# White Wall - Left
-	pygame.draw.polygon (display_box, white, [(120, 360), (120, 460), (0, 460), (0, 360)])
-	pygame.draw.polygon (display_box, black, [(120, 360), (120, 460), (0, 460), (0, 360)], 1)
+	pygame.draw.polygon (display_box, white, [(120, 340), (120, 460), (0, 460), (0, 340)])
+	pygame.draw.polygon (display_box, black, [(120, 340), (120, 460), (0, 460), (0, 340)], 1)
+	pygame.draw.polygon (display_box, (50, 50, 50), [(100, 370), (100, 440), (0, 440), (0, 370)])
+	pygame.draw.polygon (display_box, black, [(100, 370), (100, 440), (0, 440), (0, 370)], 1)
+	pygame.draw.polygon (display_box, silver_board, [(95, 375), (95, 435), (0, 435), (0, 375)])
+	pygame.draw.polygon (display_box, black, [(95, 375), (95, 435), (0, 435), (0, 375)], 1)
 	# White Wall - Right
-	pygame.draw.polygon (display_box, white, [(1199, 360), (1199, 460), (1080, 460), (1080, 360)])
-	pygame.draw.polygon (display_box, black, [(1199, 360), (1199, 460), (1080, 460), (1080, 360)], 1)
+	pygame.draw.polygon (display_box, white, [(1199, 340), (1199, 460), (1080, 460), (1080, 340)])
+	pygame.draw.polygon (display_box, black, [(1199, 340), (1199, 460), (1080, 460), (1080, 340)], 1)
+	# Grass
+	for i in range (0, 320, 5) :
+		height = 10 * random.randint (1, 5)
+		width = 3 * random.randint (1, 3)
+		pygame.draw.polygon (display_box, grass, [(i - width, 460), (i, 460 - height), (i + width, 460)])
+	for i in range (880, 1200, 5) :
+		height = 10 * random.randint (1, 5)
+		width = 3 * random.randint (1, 3)
+		pygame.draw.polygon (display_box, grass, [(i - width, 460), (i, 460 - height), (i + width, 460)])
+	for i in range (570, 630, 5) :
+		height = 10 * random.randint (1, 5)
+		width = 3 * random.randint (1, 4)
+		pygame.draw.polygon (display_box, grass, [(i - width, 460), (i, 460 - height), (i + width, 460)])
+	pygame.draw.polygon (display_box, grass, [(0, 679), (200, 460), (0, 460)])
+	pygame.draw.polygon (display_box, black, [(0, 679), (200, 460), (0, 460)], 1)
+	pygame.draw.polygon (display_box, grass, [(1199, 679), (990, 460), (1199, 460)])
+	pygame.draw.polygon (display_box, black, [(1199, 679), (990, 460), (1199, 460)], 1)
 	# Road outside
 	pygame.draw.polygon (display_box, road, [(0, 679), (200, 460), (990, 460), (1199, 679)])
 	pygame.draw.polygon (display_box, black, [(0, 679), (200, 460), (990, 460), (1199, 679)], 1)
