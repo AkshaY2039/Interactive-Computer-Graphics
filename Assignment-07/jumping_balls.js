@@ -1,4 +1,7 @@
-/* The Jumping Balls. */
+/*
+	Assignment 7.1 - Jumping Balls
+		- Akshay Kumar (CED15I031)
+*/
 
 // var canvas = document.getElementById ("jumping_balls")
 // var jumping_balls = canvas.getContext ("2d")

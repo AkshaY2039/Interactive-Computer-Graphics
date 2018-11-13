@@ -1,4 +1,7 @@
-/* The Saree. */
+/*
+	Assignment 7.2 - Saree
+		- Akshay Kumar (CED15I031)
+*/
 
 // var canvas = document.getElementById ("saree")
 // var saree = canvas.getContext ("2d")
