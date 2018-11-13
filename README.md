@@ -45,7 +45,7 @@
 2.	Design a nice coloured Saree with good design supposed by textures and shades and Fractal Graphics.
 3.	Rotating three dimensional cube with each face has an image. Here Six faces will have six images in total. This is like a six face dice in which each face is past with a printed image/photo. When dice rolled, the images do roll.
 
-##	Assignment 8 ; WebGL Animation Assignment
+##	Assignment 8 : Animation
 1.	Develop a WebGL project which display (either interactive or non-interactive) an Animation or Video Movie, either cartoon or with any other objects with
 	```
 	a. It need to display at least for 3 minutes
@@ -62,3 +62,4 @@
 	*	[PyGame](https://www.pygame.org/docs/)
 *	With WebGL
 	*	[Learning WebGL](https://github.com/gpjt/webgl-lessons)
+	*	[Code examples that accompany the MDN WebGL documentation](https://github.com/mdn/webgl-examples)

@@ -1,149 +1,251 @@
-/*
- * main.js
- * Copyright (C) 2018 g <g@ABCL>
- *
- * Distributed under terms of the MIT license.
- */
+/* The Jumping Balls. */
+
+// var canvas = document.getElementById ("jumping_balls")
+// var jumping_balls = canvas.getContext ("2d")
+
+// jumping_balls.font = "15px Arial";
+// jumping_balls.fillText ("1. Jumping Balls", 10, 20);
+
+// Spheres bouncing around a room. Walls are animated when they are hit
+// The room is centered around (x,y,z) = (0,0,0)
+//
 (function() {
-	'use strict';
-  
-	var vs = `#version 300 es
-  
-		in vec4 a_position;
-	in vec4 a_color;
-  
-	uniform mat4 u_matrix;
-  
-	out vec4 v_color;
-  
-	void main() {
-	  // Multiply the position by the matrix.
-	  gl_Position = u_matrix * a_position;
-  
-	  // Pass the color to the fragment shader.
-	  v_color = a_color;
-	}
-	`;
-  
-	var fs = `#version 300 es
-  
-		precision mediump float;
-  
-	// Passed in from the vertex shader.
-	in vec4 v_color;
-  
-	uniform vec4 u_colorMult;
-  
-	out vec4 outColor;
-  
-	void main() { outColor = v_color * u_colorMult; }
-	`;
-  
-	function main() {
-	  // Get A WebGL context
-	  /** @type {HTMLCanvasElement} */
-	  var canvas = document.getElementById("canvas");
-	  var gl = canvas.getContext("webgl2");
-	  if (!gl) {
-		return;
-	  }
-  
-	  // Tell the twgl to match position with a_position, n
-	  // normal with a_normal etc..
-	  twgl.setAttributePrefix("a_");
-  
-	  var sphereBufferInfo = twgl.primitives.createSphereVertices(gl, 10, 12, 6);
-  
-	  // setup GLSL program
-	  var programInfo = twgl.createProgramInfo(gl, [ vs, fs ]);
-  
-	  var sphereVAO =
-		  twgl.createVAOFromBufferInfo(gl, programInfo, sphereBufferInfo);
-	  var cubeVAO = twgl.createVAOFromBufferInfo(gl, programInfo, cubeBufferInfo);
-	  var coneVAO = twgl.createVAOFromBufferInfo(gl, programInfo, coneBufferInfo);
-  
-	  function degToRad(d) { return d * Math.PI / 180; }
-  
-	  var fieldOfViewRadians = degToRad(45);
-  
-	  // Uniforms for each object.
-	  var sphereUniforms = {
-		u_colorMult : [ 0.5, 1, 0.5, 1 ],
-		u_matrix : m4.identity(),
-	  };
-	  var cubeUniforms = {
-		u_colorMult : [ 1, 0.5, 0.5, 1 ],
-		u_matrix : m4.identity(),
-	  };
-	  var coneUniforms = {
-		u_colorMult : [ 0.5, 0.5, 1, 1 ],
-		u_matrix : m4.identity(),
-	  };
-	  var sphereTranslation = [ 0, 0, 0 ];
-	  var cubeTranslation = [ -40, 0, 0 ];
-	  var coneTranslation = [ 40, 0, 0 ];
-  
-	  function computeMatrix(viewProjectionMatrix, translation, xRotation,
-							 yRotation) {
-		var matrix = m4.translate(viewProjectionMatrix, translation[0],
-								  translation[1], translation[2]);
-		matrix = m4.xRotate(matrix, xRotation);
-		return m4.yRotate(matrix, yRotation);
-	  }
-  
-	  requestAnimationFrame(drawScene);
-  
-	  // Draw the scene.
-	  function drawScene(time) {
-		time = time * 0.0005;
-  
-		twgl.resizeCanvasToDisplaySize(gl.canvas);
-  
-		// Tell WebGL how to convert from clip space to pixels
-		gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  
-		gl.enable(gl.CULL_FACE);
-		gl.enable(gl.DEPTH_TEST);
-  
-		// Compute the projection matrix
-		var aspect = gl.canvas.clientWidth / gl.canvas.clientHeight;
-		var projectionMatrix =
-			m4.perspective(fieldOfViewRadians, aspect, 1, 2000);
-  
-		// Compute the camera's matrix using look at.
-		var cameraPosition = [ 0, 0, 100 ];
-		var target = [ 0, 0, 0 ];
-		var up = [ 0, 1, 0 ];
-		var cameraMatrix = m4.lookAt(cameraPosition, target, up);
-  
-		// Make a view matrix from the camera matrix.
-		var viewMatrix = m4.inverse(cameraMatrix);
-  
-		var viewProjectionMatrix = m4.multiply(projectionMatrix, viewMatrix);
-  
-		var sphereXRotation = time;
-		var sphereYRotation = time;
-  
-		gl.useProgram(programInfo.program);
-  
-		// ------ Draw the sphere --------
-  
-		// Setup all the needed attributes.
-		gl.bindVertexArray(sphereVAO);
-  
-		sphereUniforms.u_matrix =
-			computeMatrix(viewProjectionMatrix, sphereTranslation,
-						  sphereXRotation, sphereYRotation);
-  
-		// Set the uniforms we just computed
-		twgl.setUniforms(programInfo, sphereUniforms);
-  
-		twgl.drawBufferInfo(gl, sphereBufferInfo);
-  
-		requestAnimationFrame(drawScene);
-	  }
-	}
-  
-	main();
-  })();
-  
+
+    var camera, scene, renderer, spheres = [], planes = {},
+        windowWidth = 500,
+        windowHeight = 190,
+        windowDepth = 1000,
+        maxwidth = windowWidth/2,
+        maxheight = windowHeight/2,
+        maxdepth = windowDepth/2,
+        sphereRadius = 30,
+        planeStartTime = 400,
+        planeStartOpacity = 1.0,
+        animating = false;
+
+    var planeLocation = {
+        LEFT: 0,
+        RIGHT: 1,
+        TOP: 2,
+        BOTTOM: 3,
+        BACK: 4,
+        FRONT: 5
+    };
+    
+    function plane( mesh ) {
+        this.mesh = mesh;
+        this.timeleft = planeStartTime;
+    
+        this.reset = function () {
+            this.timeleft = planeStartTime;
+            this.mesh.material.opacity = planeStartOpacity;
+        }
+    
+        this.updateMesh = function( elapsed ) {
+            // First check if there is still time left in the animation
+            if (this.timeleft > 0)
+                this.timeleft -= elapsed;
+            
+            // After potential subtraction of the elapsed time, check again
+            if (this.timeleft > 0) {
+                // Opacity is a linear function of the time that is left of the animation
+                // opacity = originalOpacity * timeleft / starttime
+                this.mesh.material.opacity = planeStartOpacity * (this.timeleft / planeStartTime);
+            }
+            else {
+                this.mesh.material.opacity = 0.0;
+            }
+        }
+    }
+    
+    function sphere( mesh ) {
+        this.mesh = mesh;
+        this.direction = [ 
+            Math.round(Math.random()) == 1 ? 1 : -1, 
+            Math.round(Math.random()) == 1 ? 1 : -1,
+            Math.round(Math.random()) == 1 ? 1 : -1
+        ];
+    
+        this.speed = Math.random() * 5 + 5;
+    
+        this.updatePosition = function () {
+            this.mesh.position.x += this.direction[0]*this.speed;
+            this.mesh.position.y += this.direction[1]*this.speed;
+            this.mesh.position.z += this.direction[2]*this.speed;
+        }
+    
+        this.updateCollision = function() {
+            if (this.mesh.position.x >= (maxwidth-sphereRadius)) {
+                hitPlane(planeLocation.RIGHT);
+                this.direction[0] *= -1;
+            }
+            else if (this.mesh.position.x <= -(maxwidth-sphereRadius)) {
+                hitPlane(planeLocation.LEFT);
+                this.direction[0] *= -1;
+            }
+    
+            if (this.mesh.position.y >= (maxheight-sphereRadius)) {
+                hitPlane(planeLocation.TOP);
+                this.direction[1] *= -1;
+            }
+            else if (this.mesh.position.y <= -(maxheight-sphereRadius)) {
+                hitPlane(planeLocation.BOTTOM);
+                this.direction[1] *= -1;
+            }
+    
+            if (this.mesh.position.z >= maxdepth) {
+                hitPlane(planeLocation.BACK);
+                this.direction[2] *= -1;
+            }
+            else if (this.mesh.position.z <= -maxdepth) {
+                hitPlane(planeLocation.FRONT);
+                this.direction[2] *= -1;
+            }
+        }
+    
+    }
+    
+    function init() {
+    
+        scene = new THREE.Scene();
+    
+        camera = new THREE.PerspectiveCamera( 75, windowWidth / windowHeight, 1, 10000 );
+        camera.position.z = 1000;
+    
+        for (var i = 0; i < 1; i++) {
+            var geometry = new THREE.SphereGeometry( sphereRadius, 10, 10);
+            var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+        
+            spheres[i] = new sphere ( new THREE.Mesh( geometry, material ) );
+    
+            scene.add( spheres[i].mesh );
+        }
+    
+        initPlanes();
+    
+        renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize( windowWidth, windowHeight );
+    
+        var renderarea = document.getElementById('render-area');
+        // Remove all existing nodes.
+        while (renderarea.firstChild) {
+            renderarea.removeChild(renderarea.firstChild);
+        }
+        renderarea.appendChild( renderer.domElement );
+    
+        lastTime = new Date();
+    }
+    
+    function initPlanes() {
+        initPlane(planeLocation.TOP);
+        initPlane(planeLocation.BOTTOM);
+        initPlane(planeLocation.RIGHT);
+        initPlane(planeLocation.LEFT);
+        initPlane(planeLocation.BACK);
+        initPlane(planeLocation.FRONT);
+    }
+    
+    function initPlane( planeLoc ) {
+        var w, h, posx = 0, posy = 0, posz = 0, rotx = 0, roty = 0, rotz = 0;
+    
+        switch (planeLoc) {
+            case planeLocation.BACK:
+                w = windowWidth;
+                h = windowHeight;
+                posz = maxdepth; 
+                break;
+            case planeLocation.FRONT:
+                w = windowWidth;
+                h = windowHeight;
+                posz = -maxdepth; 
+                break;
+            case planeLocation.LEFT:
+                w = windowDepth;
+                h = windowHeight;
+                posx = -maxwidth;
+                roty = Math.PI/2;
+                break;
+            case planeLocation.RIGHT:
+                w = windowDepth;
+                h = windowHeight;
+                posx = maxwidth;
+                roty = -Math.PI/2;
+                break;
+            case planeLocation.BOTTOM:
+                w = windowWidth;
+                h = windowDepth;
+                posy = -maxheight;
+                rotx = -Math.PI/2;
+                break;
+            case planeLocation.TOP:
+                w = windowWidth;
+                h = windowDepth;
+                posy = maxheight;
+                rotx = Math.PI/2;
+                break;
+        }
+    
+        geometry = new THREE.PlaneGeometry( w, h );
+        material = new THREE.MeshBasicMaterial( { color: 0x0000ff, opacity: 0.0, transparent: true } );
+        planeMesh = new THREE.Mesh( geometry, material );
+        planeMesh.position.x = posx;
+        planeMesh.position.y = posy;
+        planeMesh.position.z = posz;
+        planeMesh.rotation.x = rotx;
+        planeMesh.rotation.y = roty;
+        planeMesh.rotation.z = rotz;
+    
+        var thePlane = new plane ( planeMesh );
+        planes[planeLoc] = thePlane;
+        
+        scene.add( thePlane.mesh );
+    }
+    
+    function hitPlane(planeLoc) {
+        planes[planeLoc].reset();
+    }
+    
+    var lastTime = 0;
+    
+    function animate() {
+        if (animating) {
+            var now = new Date();
+            var elapsed = now.getTime() - lastTime.getTime();
+            lastTime = now;
+    
+            for (var i = 0; i < spheres.length; i++) {
+                spheres[i].updatePosition();
+                spheres[i].updateCollision();
+            }
+    
+            for (var i in planes) {
+                planes[i].updateMesh( elapsed );
+            }
+    
+            // note: three.js includes requestAnimationFrame shim
+            window.animationId = requestAnimationFrame( animate );
+            render();
+        }
+    }
+    
+    function render() {
+        renderer.render( scene, camera );
+    }
+
+    var Demo4 = function() {};
+
+    Demo4.prototype.start = function() {
+        if (window.animationId !== null)
+            cancelAnimationFrame(window.animationId);
+        init();
+        animating = true;
+        animate();
+    }
+
+    Demo4.prototype.stop = function() {
+        animating = false;
+    }
+
+    window.Demo4 = new Demo4();
+
+})();
