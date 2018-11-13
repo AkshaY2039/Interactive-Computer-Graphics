@@ -72,12 +72,12 @@ function main () {
 	const buffers = initBuffers (gl);
 
 	const texture = new Array (6);
-	texture[0] = loadTexture (gl, 'face0.png');
-	texture[1] = loadTexture (gl, 'face1.png');
-	texture[2] = loadTexture (gl, 'face2.png');
-	texture[3] = loadTexture (gl, 'face3.png');
-	texture[4] = loadTexture (gl, 'face4.png');
-	texture[5] = loadTexture (gl, 'face5.png');
+	texture[0] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/face0.png');
+	texture[1] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/face1.png');
+	texture[2] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/face2.png');
+	texture[3] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/face3.png');
+	texture[4] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/face4.png');
+	texture[5] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/face5.png');
 
 	var then = 0;
 
@@ -239,6 +239,7 @@ function loadTexture (gl, url) {
 	gl.texImage2D (gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType,	pixel);
 
 	const image = new Image ();
+	image.crossOrigin = "Anonymous";
 	image.onload = function () {
 		gl.bindTexture (gl.TEXTURE_2D, texture);
 		gl.texImage2D (gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
