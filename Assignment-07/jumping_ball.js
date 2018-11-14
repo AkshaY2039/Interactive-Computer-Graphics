@@ -33,7 +33,7 @@ gl.shaderSource (fragment,
 		"if ( d > 0.5 ) {" +
 			"gl_FragColor = vec4 (0, 0, 0, 0.0);" + //color for points outside the circle
 		"} else {" +
-			"gl_FragColor = vec4 (0.2 + d, 0.2 + d, 0.2 + d, 1.0);" + //color for points within circle
+			"gl_FragColor = vec4 (0.9 + d, 0.1 + d, 1.8 + d, 1.0);" + //color for points within circle
 		"}" +
 	"}"
 );

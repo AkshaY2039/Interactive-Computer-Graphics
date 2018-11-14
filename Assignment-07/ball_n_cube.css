@@ -1,4 +1,4 @@
-/* Stylesheet for Index page */
+/* Stylesheet for Ball n Cube page */
 #assignmentName {
 	color: blue;
 	font-family: cursive;
@@ -15,4 +15,10 @@
 
 canvas {
 	border: 2px solid #182009;
+	margin-top: 40;
+}
+
+#jumping_ball {
+	margin-left: 50;
+	background-color: rgba(78, 212, 118, 0.7);
 }
