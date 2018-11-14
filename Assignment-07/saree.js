@@ -7,8 +7,9 @@ main ();
 
 // Start here
 function main () {
-	const canvas = document.getElementById ('rotating_cube');
+	const canvas = document.getElementById ('saree');
 	const gl = canvas.getContext ('webgl') || canvas.getContext ('experimental-webgl');
+	
 
 	// If we don't have a GL context, give up now
 
@@ -36,7 +37,7 @@ function main () {
 	// Fragment shader program
 	const fsSource = `
 		varying highp vec2 vTextureCoord;
-		
+
 		uniform sampler2D uSampler;
 
 		void main (void) {
@@ -69,19 +70,17 @@ function main () {
 	// objects we'll be drawing.
 	const buffers = initBuffers (gl);
 
-	const texture = new Array (6);
+	const texture = new Array (3);
 	texture[0] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/fractal-1.png');
 	texture[1] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/img-2.png');
+	texture[1] = loadTexture (gl, 'https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-07/red-silk.jpg');
+
 
 	var then = 0;
 
 	// Draw the scene repeatedly
 	function render (now) {
-		now *= 0.001;	// convert to seconds
-		const deltaTime = now - then;
-		then = now;
-
-		drawScene (gl, programInfo, buffers, texture, deltaTime);
+		drawScene (gl, programInfo, buffers, texture);
 
 		requestAnimationFrame (render);
 	}
@@ -103,41 +102,55 @@ function initBuffers (gl) {
 
 	// Now create an array of positions for the cube.
 	const positions = [
-		// Front face
-		-1.0,	-1.0,	1.0,
-		1.0,	-1.0,	1.0,
-		1.0,	1.0,	1.0,
-		-1.0,	1.0,	1.0,
+		// saree background
+		-5.0,	-1.5,	 1.5,
+		5.0,	-1.5,	1.5,
+		5.0,	1.5,	1.5,
+		-5.0,	1.5,	1.5,
 
-		// Back face
-		-1.0,	-1.0,	-1.0,
-		-1.0,	1.0,	-1.0,
-		1.0,	1.0,	-1.0,
-		1.0,	-1.0,	-1.0,
+		// lower borders
+		-5.0,	-1.5,	1.5,
+		-5.0,	-1.2,	1.5,
+		-2.5,	-1.2,	1.5,
+		-2.5,	-1.5,	1.5,
 
-		// Top face
-		-1.0,	1.0,	-1.0,
-		-1.0,	1.0,	1.0,
-		1.0,	1.0,	1.0,
-		1.0,	1.0,	-1.0,
+		-2.5,	-1.5,	1.5,
+		-2.5,	-1.2,	1.5,
+		0.0,	-1.2,	1.5,
+		0.0,	-1.5,	1.5,
 
-		// Bottom face
-		-1.0,	-1.0,	-1.0,
-		1.0,	-1.0,	-1.0,
-		1.0,	-1.0,	1.0,
-		-1.0,	-1.0,	1.0,
+		0.0,	-1.5,	1.5,
+		0.0,	-1.2,	1.5,
+		2.5,	-1.2,	1.5,
+		2.5,	-1.5,	1.5,
 
-		// Right face
-		1.0,	-1.0,	-1.0,
-		1.0,	1.0,	-1.0,
-		1.0,	1.0,	1.0,
-		1.0,	-1.0,	1.0,
+		2.5,	-1.5,	1.5,
+		2.5,	-1.2,	1.5,
+		5.0,	-1.2,	1.5,
+		5.0,	-1.5,	1.5,
 
-		// Left face
-		-1.0,	-1.0,	-1.0,
-		-1.0,	-1.0,	1.0,
-		-1.0,	1.0,	1.0,
-		-1.0,	1.0,	-1.0,
+		// top borders
+		0.0,	1.5,	1.5,
+		0.0,	1.2,	1.5,
+		2.5,	1.2,	1.5,
+		2.5,	1.5,	1.5,
+
+		2.5,	1.5,	1.5,
+		2.5,	1.2,	1.5,
+		5.0,	1.2,	1.5,
+		5.0,	1.5,	1.5,
+
+		// side borders
+		5.0,	1.5,	1.5,
+		4.6,	1.5,	1.5,
+		4.6,	0.0,	1.5,
+		5.0,	0.0,	1.5,
+
+		// side borders
+		5.0,	0.0,	1.5,
+		4.6,	0.0,	1.5,
+		4.6,	-1.5,	1.5,
+		5.0,	-1.5,	1.5,
 	];
 
 	// Now pass the list of positions into WebGL to build the
@@ -150,37 +163,55 @@ function initBuffers (gl) {
 	gl.bindBuffer (gl.ARRAY_BUFFER, textureCoordBuffer);
 
 	const textureCoordinates = [
-		// Front
+		// background cloth
 		0.0,	0.0,
 		1.0,	0.0,
 		1.0,	1.0,
 		0.0,	1.0,
-		// Back
-		0.0,	0.0,
+
+		//lower borders
 		1.0,	0.0,
 		1.0,	1.0,
 		0.0,	1.0,
-		// Top
 		0.0,	0.0,
+
 		1.0,	0.0,
 		1.0,	1.0,
 		0.0,	1.0,
-		// Bottom
 		0.0,	0.0,
+
 		1.0,	0.0,
 		1.0,	1.0,
 		0.0,	1.0,
-		// Right
 		0.0,	0.0,
+
 		1.0,	0.0,
 		1.0,	1.0,
 		0.0,	1.0,
-		// Left
 		0.0,	0.0,
+
+		// upper borders
 		1.0,	0.0,
 		1.0,	1.0,
 		0.0,	1.0,
-	];
+		0.0,	0.0,
+
+		1.0,	0.0,
+		1.0,	1.0,
+		0.0,	1.0,
+		0.0,	0.0,
+
+		// side borders
+		1.0,	1.0,
+		1.0,	0.0,
+		0.0,	0.0,
+		0.0,	1.0,
+
+		1.0,	1.0,
+		1.0,	0.0,
+		0.0,	0.0,
+		0.0,	1.0,
+	]
 
 	gl.bufferData (gl.ARRAY_BUFFER, new Float32Array (textureCoordinates), gl.STATIC_DRAW);
 
@@ -193,12 +224,15 @@ function initBuffers (gl) {
 	// indices into the vertex array to specify each triangle's
 	// position.
 	const indices = [
-		0,	1,	2,	0,	2,	3,	// front
-		4,	5,	6,	4,	6,	7,	// back
-		8,	9,	10,	8,	10, 11, // top
-		12, 13, 14, 12, 14, 15, // bottom
-		16, 17, 18, 16, 18, 19, // right
-		20, 21, 22, 20, 22, 23,	// left
+		0,	1,	2,	    0,	2,	3,	// saree cloth
+		4,	5,	6,		4,	6,	7,	// lower border
+		8,	9,	10,		8,	10,	11,	// lower border
+		12,	13,	14,		12,	14,	15,	// lower border
+		16,	17,	18,		16,	18,	19,	// lower border
+		20,	21,	22,		20,	22,	23,	// upper border
+		24,	25,	26,		24,	26,	27,	// upper border
+		28,	29,	30,		28,	30,	31,	// side border
+		32,	33,	34,		32,	34,	35,	// side border
 	];
 
 	// Now send the element array to GL
@@ -295,19 +329,7 @@ function drawScene (gl, programInfo, buffers, texture, deltaTime) {
 	// start drawing the square.
 	mat4.translate (modelViewMatrix, 	// destination matrix
 					modelViewMatrix, 	// matrix to translate
-					[-0.0, 0.0, -7.0]);	// amount to translate
-	mat4.rotate (modelViewMatrix,	// destination matrix
-				 modelViewMatrix,	// matrix to rotate
-				 cubeRotation * 0.5,		// amount to rotate in radians
-				 [0, 0, 1]);		// axis to rotate around (Z)
-	mat4.rotate (modelViewMatrix,	// destination matrix
-				 modelViewMatrix,	// matrix to rotate
-				 cubeRotation * 0.5,	// amount to rotate in radians
-				 [0, 1, 0]);		// axis to rotate around (Y)
-	mat4.rotate (modelViewMatrix,	// destination matrix
-				 modelViewMatrix,	// matrix to rotate
-				 cubeRotation * 0.5,	// amount to rotate in radians
-				 [1, 0, 0]);		// axis to rotate around (X)
+					[-0.0, 0.0, -6.0]);	// amount to translate
 
 	// Tell WebGL how to pull out the positions from the position
 	// buffer into the vertexPosition attribute
@@ -360,9 +382,10 @@ function drawScene (gl, programInfo, buffers, texture, deltaTime) {
 	// Specify the texture to map onto the faces.
 	/******************** Applying textures *******************************/
 	// Tell WebGL we want to affect texture unit 0
-	gl.activeTexture (gl.TEXTURE0);
-	gl.bindTexture (gl.TEXTURE_2D, texture[0]);
-	gl.uniform1i (programInfo.uniformLocations.uSampler, 0);
+	// applying cloth texture
+	gl.activeTexture (gl.TEXTURE2);
+	gl.bindTexture (gl.TEXTURE_2D, texture[2]);
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 2);
 	{
 		const vertexCount = 6;
 		const type = gl.UNSIGNED_SHORT;
@@ -370,9 +393,30 @@ function drawScene (gl, programInfo, buffers, texture, deltaTime) {
 		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
 	}
 
+	// side borders
 	gl.activeTexture (gl.TEXTURE1);
 	gl.bindTexture (gl.TEXTURE_2D, texture[1]);
 	gl.uniform1i (programInfo.uniformLocations.uSampler, 1);
+	{
+		const vertexCount = 6;
+		const type = gl.UNSIGNED_SHORT;
+		const offset = 84;
+		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
+	}
+
+	// side borders
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 1);
+	{
+		const vertexCount = 6;
+		const type = gl.UNSIGNED_SHORT;
+		const offset = 96;
+		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
+	}
+
+	// top and bottom borders
+	gl.activeTexture (gl.TEXTURE0);
+	gl.bindTexture (gl.TEXTURE_2D, texture[0]);
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 0);
 	{
 		const vertexCount = 6;
 		const type = gl.UNSIGNED_SHORT;
@@ -380,9 +424,7 @@ function drawScene (gl, programInfo, buffers, texture, deltaTime) {
 		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
 	}
 
-	gl.activeTexture (gl.TEXTURE2);
-	gl.bindTexture (gl.TEXTURE_2D, texture[2]);
-	gl.uniform1i (programInfo.uniformLocations.uSampler, 2);
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 0);
 	{
 		const vertexCount = 6;
 		const type = gl.UNSIGNED_SHORT;
@@ -390,9 +432,7 @@ function drawScene (gl, programInfo, buffers, texture, deltaTime) {
 		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
 	}
 
-	gl.activeTexture (gl.TEXTURE3);
-	gl.bindTexture (gl.TEXTURE_2D, texture[3]);
-	gl.uniform1i (programInfo.uniformLocations.uSampler, 3);
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 0);
 	{
 		const vertexCount = 6;
 		const type = gl.UNSIGNED_SHORT;
@@ -400,9 +440,7 @@ function drawScene (gl, programInfo, buffers, texture, deltaTime) {
 		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
 	}
 
-	gl.activeTexture (gl.TEXTURE4);
-	gl.bindTexture (gl.TEXTURE_2D, texture[4]);
-	gl.uniform1i (programInfo.uniformLocations.uSampler, 4);
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 0);
 	{
 		const vertexCount = 6;
 		const type = gl.UNSIGNED_SHORT;
@@ -410,19 +448,21 @@ function drawScene (gl, programInfo, buffers, texture, deltaTime) {
 		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
 	}
 
-	gl.activeTexture (gl.TEXTURE5);
-	gl.bindTexture (gl.TEXTURE_2D, texture[5]);
-	gl.uniform1i (programInfo.uniformLocations.uSampler, 5);
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 0);
 	{
 		const vertexCount = 6;
 		const type = gl.UNSIGNED_SHORT;
 		const offset = 60;
 		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
 	}
-	/******************** Finished Applying texture *******************************/
-	
-	// Update the rotation for the next draw
-	cubeRotation += deltaTime;
+
+	gl.uniform1i (programInfo.uniformLocations.uSampler, 0);
+	{
+		const vertexCount = 6;
+		const type = gl.UNSIGNED_SHORT;
+		const offset = 72;
+		gl.drawElements (gl.TRIANGLES, vertexCount, type, offset);
+	}
 }
 
 // Initialize a shader program, so WebGL knows how to draw our data
