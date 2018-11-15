@@ -343,11 +343,11 @@ var init = function init () {
 	camera.lookAt (new THREE.Vector3 ());
 
 	loader.crossOrigin = 'Anonymous';
-	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex.png', function (texture) {
-		texture.magFilter = THREE.NearestFilter;
-		texture.minFilter = THREE.NearestFilter;
+	for (var i = 0; i < BUTTERFLY_NUM; i++) {
+		loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex0.png', function (texture) {
+			texture.magFilter = THREE.NearestFilter;
+			texture.minFilter = THREE.NearestFilter;
 
-		for (var i = 0; i < BUTTERFLY_NUM; i++) {
 			butterflies[i] = new Butterfly (i, texture);
 			butterflies[i].obj.position.set (
 					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
@@ -355,9 +355,25 @@ var init = function init () {
 					window.innerWidth / BUTTERFLY_NUM * i
 				);
 			scene.add (butterflies[i].obj);
-		}
-		renderLoop ();
-	});
+
+			renderLoop ();
+		});
+	}
+	// loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex.png', function (texture) {
+	// 	texture.magFilter = THREE.NearestFilter;
+	// 	texture.minFilter = THREE.NearestFilter;
+
+	// 	for (var i = 0; i < BUTTERFLY_NUM; i++) {
+	// 		butterflies[i] = new Butterfly (i, texture);
+	// 		butterflies[i].obj.position.set (
+	// 				((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
+	// 				0, 
+	// 				window.innerWidth / BUTTERFLY_NUM * i
+	// 			);
+	// 		scene.add (butterflies[i].obj);
+	// 	}
+	// 	renderLoop ();
+	// });
 };
 
 init();
