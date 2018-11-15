@@ -1,0 +1,18 @@
+/* Stylesheet for square page */
+#assignmentName {
+	color: blue;
+	font-family: cursive;
+	font-size: 25px;
+	text-align: left;
+}
+
+#myName {
+	color: #2725c0;
+	font-family: monospace;
+	font-size: 15px;
+	text-align: right;
+}
+
+canvas {
+	border: 2px solid #182009;
+}
