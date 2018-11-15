@@ -28,7 +28,7 @@ def screenUpdate () :
 def drawCircles () :
 	for x in range (radius, scrWidth, 2*radius) :
 		for y in range (radius, scrHeight, 2*radius) :
-			pygame.draw.circle (display_box, ((x*x)%255, (y*y)%255, (x+y)%255), (x, y), radius-5, 2)
+			pygame.draw.circle (display_box, ((x*x)%255, (y*y)%255, (x+y)%255), (x, y), radius-2, 2)
 	screenUpdate ()
 	
 if __name__ == '__main__' :
