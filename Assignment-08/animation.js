@@ -100,9 +100,9 @@ var Butterfly = function () {
 										float flapTime = radians (sin (time * 8.0 - length (position.xy) / size * 0.46 + index * 2.0) * 45.0 + 30.0);
 										float hovering = cos (time * 2.0 + index * 1.0) * size / 8.0;
 										vec3 updatePosition = vec3 (
-											cos (flapTime) * position.x,
-											position.y + hovering,
-											sin(flapTime) * abs(position.x) + hovering
+												cos (flapTime) * position.x,
+												position.y + hovering,
+												sin(flapTime) * abs(position.x) + hovering
 											);
 
 										vec4 mvPosition = modelViewMatrix * vec4 (updatePosition, 1.0);
@@ -295,7 +295,7 @@ var vectorTouchEnd = new THREE.Vector2 ();
 var CAMERA_SIZE_X = 640;
 var CAMERA_SIZE_Y = 480;
 
-var BUTTERFLY_NUM = 10;
+var BUTTERFLY_NUM = 20;
 var butterflies = [];
 
 var resizeCamera = function resizeCamera () {
@@ -343,16 +343,16 @@ var init = function init () {
 	camera.lookAt (new THREE.Vector3 ());
 
 	loader.crossOrigin = 'Anonymous';
-	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/tex.png', function (texture) {
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex.png', function (texture) {
 		texture.magFilter = THREE.NearestFilter;
 		texture.minFilter = THREE.NearestFilter;
 
 		for (var i = 0; i < BUTTERFLY_NUM; i++) {
 			butterflies[i] = new Butterfly (i, texture);
 			butterflies[i].obj.position.set (
-					((i + 1) % (2)) * i * 50, 
+					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
 					0, 
-					1800 / BUTTERFLY_NUM * i
+					window.innerWidth / BUTTERFLY_NUM * i
 				);
 			scene.add (butterflies[i].obj);
 		}
