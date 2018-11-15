@@ -41,7 +41,7 @@ var debounce = function debounce (callback, duration) {
 	};
 };
   
-var SIZE = 280;
+var SIZE = 80;
 
 var Butterfly = function () {
 	function Butterfly (i, texture) {
@@ -75,7 +75,8 @@ var Butterfly = function () {
 				key: 'createObj',
 				value: function createObj ()
 				{
-					var geometry = new THREE.PlaneBufferGeometry (SIZE, SIZE / 2, 24, 12);
+					var flySize = Math.floor (Math.random() * 100) + SIZE;
+					var geometry = new THREE.PlaneBufferGeometry (flySize, flySize / 2, 24, 12);
 					var mesh = new THREE.Mesh (
 						geometry,
 						new THREE.RawShaderMaterial (
@@ -96,8 +97,8 @@ var Butterfly = function () {
 									varying vec2 vUv;
 
 									void main () {
-										float flapTime = radians (sin (time * 6.0 - length (position.xy) / size * 2.6 + index * 2.0) * 45.0 + 30.0);
-										float hovering = cos (time * 2.0 + index * 3.0) * size / 16.0;
+										float flapTime = radians (sin (time * 8.0 - length (position.xy) / size * 0.46 + index * 2.0) * 45.0 + 30.0);
+										float hovering = cos (time * 2.0 + index * 1.0) * size / 8.0;
 										vec3 updatePosition = vec3 (
 											cos (flapTime) * position.x,
 											position.y + hovering,
@@ -246,7 +247,7 @@ var Butterfly = function () {
 										float noise = snoise3 (
 											vPosition / vec3 (size * 0.5) + vec3 (0.0, 0.0, time)
 											);
-										vec3 hsv = vec3 (1.0 + noise * 0.5 + index * 0.7, 0.4, 1.0);
+										vec3 hsv = vec3 (1.0 + noise * 0.1 + index * 0.7, 0.4, 1.0);
 										vec3 rgb = convertHsvToRgb (hsv);
 
 										gl_FragColor = vec4 (rgb, 1.0) * texColor;
@@ -257,7 +258,8 @@ var Butterfly = function () {
 								}
 							)
 						);
-					mesh.rotation.set (-50 * Math.PI / 180, 0, 0);
+					
+					mesh.rotation.set (-70 * Math.PI / 180, 0, 0);
 					return mesh;
 				}
 			}, 
@@ -265,7 +267,7 @@ var Butterfly = function () {
 				key: 'render', 
 				value: function render (renderer, time) {
 					this.uniforms.time.value += time;
-					this.obj.position.z = this.obj.position.z > -900 ? this.obj.position.z - 4 : 900;
+					this.obj.position.z = this.obj.position.z > -(window.innerHeight/2 + 100) ? this.obj.position.z - 1 : window.innerHeight/2 + 100;
 				}
 			}
 		]
