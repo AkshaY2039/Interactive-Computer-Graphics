@@ -52,6 +52,13 @@
 	b. Minimum 1,000 lines of executable code.
 	```
 
+##	End Sem Lab Exam - 15 Nov 2018
+1.	Using any language, draw 100 non intersecting disjoint circles.
+	``` 
+	Using Python 
+	```
+2.	Using WebGL, draw a square divided into 4 sub-square. Each sub-square is filled with different color.
+
 ####	_Help_
 *	With C/C++ programs
 	*	g++ pgm.cpp -lglut -lGL -lGLEW -lGLU
