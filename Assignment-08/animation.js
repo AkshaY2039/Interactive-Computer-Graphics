@@ -41,7 +41,7 @@ var debounce = function debounce (callback, duration) {
 	};
 };
   
-var SIZE = 80;
+var SIZE = 70;
 
 var Butterfly = function () {
 	function Butterfly (i, texture) {
@@ -75,6 +75,7 @@ var Butterfly = function () {
 				key: 'createObj',
 				value: function createObj ()
 				{
+					/* to randomize butterfly size */
 					var flySize = Math.floor (Math.random() * 100) + SIZE;
 					var geometry = new THREE.PlaneBufferGeometry (flySize, flySize / 2, 24, 12);
 					var mesh = new THREE.Mesh (
@@ -97,6 +98,7 @@ var Butterfly = function () {
 									varying vec2 vUv;
 
 									void main () {
+										// adjusted constant for size to give a different flap time as well as flapping smoothness
 										float flapTime = radians (sin (time * 8.0 - length (position.xy) / size * 0.46 + index * 2.0) * 45.0 + 30.0);
 										float hovering = cos (time * 2.0 + index * 1.0) * size / 8.0;
 										vec3 updatePosition = vec3 (
@@ -247,6 +249,7 @@ var Butterfly = function () {
 										float noise = snoise3 (
 											vPosition / vec3 (size * 0.5) + vec3 (0.0, 0.0, time)
 											);
+										// adjusted noise coefficient to get stable colour
 										vec3 hsv = vec3 (1.0 + noise * 0.1 + index * 0.7, 0.4, 1.0);
 										vec3 rgb = convertHsvToRgb (hsv);
 
@@ -258,8 +261,10 @@ var Butterfly = function () {
 								}
 							)
 						);
-					
-					mesh.rotation.set (-70 * Math.PI / 180, 0, 0);
+
+					/* varying angle for each butterfly */
+					var angle = -90 + Math.floor (Math.random() * 100) % 60;
+					mesh.rotation.set (angle * Math.PI / 180, 0, 0);
 					return mesh;
 				}
 			}, 
@@ -267,7 +272,7 @@ var Butterfly = function () {
 				key: 'render', 
 				value: function render (renderer, time) {
 					this.uniforms.time.value += time;
-					this.obj.position.z = this.obj.position.z > -(window.innerHeight/2 + 100) ? this.obj.position.z - 1 : window.innerHeight/2 + 100;
+					this.obj.position.z = this.obj.position.z > -(window.innerWidth/2 + 100) ? this.obj.position.z - 1 : window.innerWidth/2 + 100;
 				}
 			}
 		]
@@ -295,7 +300,7 @@ var vectorTouchEnd = new THREE.Vector2 ();
 var CAMERA_SIZE_X = 640;
 var CAMERA_SIZE_Y = 480;
 
-var BUTTERFLY_NUM = 20;
+var BUTTERFLY_NUM = 50;
 var butterflies = [];
 
 var resizeCamera = function resizeCamera () {
@@ -337,17 +342,23 @@ var on = function on () {
 var init = function init () {
 	resizeWindow ();
 	on ();
+	scene.background = new THREE.TextureLoader().load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/Garden.jpg');
+
+	/* random start of which texture which butterfly must get */
+	start = Math.floor (Math.random () * 100) % 7;
 
 	renderer.setClearColor (0xeeeeee, 1.0);
-	camera.position.set (250, 500, 1000);
+	/* changed position of camera to make Butter flies flying in different direction */
+	camera.position.set (500, -100, -1000);
 	camera.lookAt (new THREE.Vector3 ());
 
 	loader.crossOrigin = 'Anonymous';
-	for (var i = 0; i < BUTTERFLY_NUM; i++) {
-		loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex0.png', function (texture) {
-			texture.magFilter = THREE.NearestFilter;
-			texture.minFilter = THREE.NearestFilter;
+	/* varied 7 types of butterflies */
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex0.png', function (texture) {
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
 
+		for (var i = (start + 0) % 7; i < BUTTERFLY_NUM; i+= 7) {
 			butterflies[i] = new Butterfly (i, texture);
 			butterflies[i].obj.position.set (
 					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
@@ -355,25 +366,99 @@ var init = function init () {
 					window.innerWidth / BUTTERFLY_NUM * i
 				);
 			scene.add (butterflies[i].obj);
+		}
+		renderLoop ();
+	});
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex1.png', function (texture) {
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
 
-			renderLoop ();
-		});
-	}
-	// loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex.png', function (texture) {
-	// 	texture.magFilter = THREE.NearestFilter;
-	// 	texture.minFilter = THREE.NearestFilter;
+		for (var i = (start + 1) % 7; i < BUTTERFLY_NUM; i+= 7) {
+			butterflies[i] = new Butterfly (i, texture);
+			butterflies[i].obj.position.set (
+					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
+					0, 
+					window.innerWidth / BUTTERFLY_NUM * i
+				);
+			scene.add (butterflies[i].obj);
+		}
+		renderLoop ();
+	});
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex2.png', function (texture) {
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
 
-	// 	for (var i = 0; i < BUTTERFLY_NUM; i++) {
-	// 		butterflies[i] = new Butterfly (i, texture);
-	// 		butterflies[i].obj.position.set (
-	// 				((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
-	// 				0, 
-	// 				window.innerWidth / BUTTERFLY_NUM * i
-	// 			);
-	// 		scene.add (butterflies[i].obj);
-	// 	}
-	// 	renderLoop ();
-	// });
+		for (var i = (start + 2) % 7; i < BUTTERFLY_NUM; i+= 7) {
+			butterflies[i] = new Butterfly (i, texture);
+			butterflies[i].obj.position.set (
+					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
+					0, 
+					window.innerWidth / BUTTERFLY_NUM * i
+				);
+			scene.add (butterflies[i].obj);
+		}
+		renderLoop ();
+	});
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex3.png', function (texture) {
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
+
+		for (var i = (start + 3) % 7; i < BUTTERFLY_NUM; i+= 7) {
+			butterflies[i] = new Butterfly (i, texture);
+			butterflies[i].obj.position.set (
+					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
+					0, 
+					window.innerWidth / BUTTERFLY_NUM * i
+				);
+			scene.add (butterflies[i].obj);
+		}
+		renderLoop ();
+	});
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex4.png', function (texture) {
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
+
+		for (var i = (start + 4) % 7; i < BUTTERFLY_NUM; i+= 7) {
+			butterflies[i] = new Butterfly (i, texture);
+			butterflies[i].obj.position.set (
+					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
+					0, 
+					window.innerWidth / BUTTERFLY_NUM * i
+				);
+			scene.add (butterflies[i].obj);
+		}
+		renderLoop ();
+	});
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex5.png', function (texture) {
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
+
+		for (var i = (start + 5) % 7; i < BUTTERFLY_NUM; i+= 7) {
+			butterflies[i] = new Butterfly (i, texture);
+			butterflies[i].obj.position.set (
+					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
+					0, 
+					window.innerWidth / BUTTERFLY_NUM * i
+				);
+			scene.add (butterflies[i].obj);
+		}
+		renderLoop ();
+	});
+	loader.load ('https://raw.githubusercontent.com/AkshaY2039/Interactive-Computer-Graphics/master/Assignment-08/TEX/tex6.png', function (texture) {
+		texture.magFilter = THREE.NearestFilter;
+		texture.minFilter = THREE.NearestFilter;
+
+		for (var i = (start + 6) % 7; i < BUTTERFLY_NUM; i+= 7) {
+			butterflies[i] = new Butterfly (i, texture);
+			butterflies[i].obj.position.set (
+					((i + 1) % (BUTTERFLY_NUM / 2)) * i * 50 - 100, 
+					0, 
+					window.innerWidth / BUTTERFLY_NUM * i
+				);
+			scene.add (butterflies[i].obj);
+		}
+		renderLoop ();
+	});
 };
 
 init();
