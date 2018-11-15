@@ -244,9 +244,9 @@ var Butterfly = function () {
 										vec4 texColor = texture2D (texture, vUv);
 
 										float noise = snoise3 (
-											vPosition / vec3 (size * 0.25) + vec3 (0.0, 0.0, time)
+											vPosition / vec3 (size * 0.5) + vec3 (0.0, 0.0, time)
 											);
-										vec3 hsv = vec3 (1.0 + noise * 0.2 + index * 0.7, 0.4, 1.0);
+										vec3 hsv = vec3 (1.0 + noise * 0.5 + index * 0.7, 0.4, 1.0);
 										vec3 rgb = convertHsvToRgb (hsv);
 
 										gl_FragColor = vec4 (rgb, 1.0) * texColor;
@@ -257,7 +257,7 @@ var Butterfly = function () {
 								}
 							)
 						);
-					mesh.rotation.set (-45 * Math.PI / 180, 0, 0);
+					mesh.rotation.set (-50 * Math.PI / 180, 0, 0);
 					return mesh;
 				}
 			}, 
@@ -347,7 +347,11 @@ var init = function init () {
 
 		for (var i = 0; i < BUTTERFLY_NUM; i++) {
 			butterflies[i] = new Butterfly (i, texture);
-			butterflies[i].obj.position.set (((i + 1) % (3 - 1)) * i * 50, 0, 1800 / BUTTERFLY_NUM * i);
+			butterflies[i].obj.position.set (
+					((i + 1) % (2)) * i * 50, 
+					0, 
+					1800 / BUTTERFLY_NUM * i
+				);
 			scene.add (butterflies[i].obj);
 		}
 		renderLoop ();
