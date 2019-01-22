@@ -1,4 +1,8 @@
 #	Interactive-Computer-Graphics
+Interactive Computer Graphics Work
+-	Course Code : COM404P
+-	Course Faculty : Dr. Shankaran Vaidyanathan
+-- --
 
 ##	Asssignment 1 : Simple Algorithms
 1.	Bresenham's Straight Line Algorithm
